@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,12 +19,28 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js versi sesuai matriks dan cache npm
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # 3. Install dependencies menggunakan npm ci (memerlukan package-lock.json)
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./your-directory  # Ganti dengan direktori proyek kamu jika diperlukan
+
+      # 4. Build proyek jika ada script build
+      - name: Build project
+        run: npm run build --if-present
+        working-directory: ./your-directory  # Ganti dengan direktori proyek kamu jika diperlukan
+
+      # 5. Jalankan tes
+      - name: Run tests
+        run: npm test
+        working-directory: ./your-directory  # Ganti dengan direktori proyek kamu jika diperlukan
